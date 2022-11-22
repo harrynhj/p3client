@@ -17,12 +17,22 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 public class GameButton extends Button {
-	int clickPlayerOne;
-	int clickPlayerTwo;
+	public int x;
+	public int y;
 	
-	// GameButton() {	}
+	GameButton(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
 	
-	// public int evalTurn() {	}
+	public void gravity(GameButton[][] matrix) {
+		for(int i = 0; i < matrix.length; i++) {
+			for(int j = 0; j < matrix[i].length; j++) {
+				matrix[0][0].setStyle("-fx-background-color: #aabbcc");
+			}
+		}
+
+	}
 	
 	// public int sendResult() {	}
 

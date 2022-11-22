@@ -1,4 +1,6 @@
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.logging.Handler;
 
 import javafx.application.Application;
@@ -26,7 +28,7 @@ public class ClientGUI extends Application {
 	Client clientConnection;
 	
 	VBox vb, vb2;
-    HBox hb1, hb2, hb3, hb4, hb5, hb6;
+    HBox hb1, hb2, hbError, hb3, hb4, hb5, hb6;
 	GridPane gp;
 	Button quit, connect;
 
@@ -57,16 +59,21 @@ public class ClientGUI extends Application {
         hb1 = new HBox();
         hb2 = new HBox(10);
         hb3 = new HBox(75);
+		hbError = new HBox(30);
         
         hb1.setAlignment(Pos.CENTER);
         hb2.setAlignment(Pos.CENTER);
+		hbError.setAlignment(Pos.CENTER);
         hb3.setAlignment(Pos.CENTER);
 
         hb1.getChildren().addAll(welcome);
         hb2.getChildren().addAll(ip, sep, port);
+		
+		error.setVisible(false);
+		hbError.getChildren().add(error);
         hb3.getChildren().addAll(quit, connect);
         
-        vb.getChildren().addAll(hb1, hb2, hb3);
+        vb.getChildren().addAll(hb1, hb2, hb3, hbError);
         vb.setPadding(new Insets(100, 0, 0, 0));
         vb.setSpacing(100);
 
@@ -77,96 +84,104 @@ public class ClientGUI extends Application {
 
         connect.setOnAction((event) -> {
             ipString = ip.getText();
-            portInt = Integer.parseInt(port.getText());
+            
+			if(Objects.equals(ip.getText(), "") || Objects.equals(port.getText(), "")) {
+				error.setText("IP or Port Invalid!");
+				error.setVisible(true);
+				error.setTextFill(Color.color(1,0,0));
+				port.clear();
+				port.setDisable(false);
+				error.setVisible(true);
+				return;
+			}
+			portInt = Integer.parseInt(port.getText());
 
             clientConnection = new Client(data -> {
                 Platform.runLater(() -> { }); } , ipString, portInt);
                 clientConnection.start();
-				// clientConnection.send("Connecting");
+				
+					gp = new GridPane();
+					turnOrder = new Label();
+					turnOrder.setStyle("-fx-font-size: 24px; -fx-background-radius: 20px");
+					prevMove = new Label();
+					prevMove.setStyle("-fx-font-size: 24px; -fx-background-radius: 20px");
+					
+					move = 0;
+					GameButton[][] matrix = new GameButton[7][6];
 
-				// if(ip.getText() != "127.0.0.1" && port.getText() != "5555") {
-				// 	System.out.println(ip.getText());
-				// 	System.out.println(port.getText());
-				// 	error.setText("IP or Port Invalid!");
-				// 	error.setVisible(true);
-				// 	error.setTextFill(Color.color(1,0,0));
-				// 	error.setDisable(false);
-				// 	port.clear();
-				// 	port.setDisable(false);
-				// } else {
-				
-				gp = new GridPane();
-				turnOrder = new Label();
-				turnOrder.setStyle("-fx-font-size: 24px; -fx-background-radius: 20px");
-				prevMove = new Label();
-				prevMove.setStyle("-fx-font-size: 24px; -fx-background-radius: 20px");
-				
-				move = 0;
-				
-				EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
-					public void handle(ActionEvent e) {
-						GameButton b = (GameButton)e.getSource();
-						row = Math.abs(GridPane.getRowIndex(b) - 5);
-						col = GridPane.getColumnIndex(b);
-
-						
-						b.setDisable(true);
-						if(move % 2 == 0) {
-							b.setStyle("-fx-background-color: #000000"); // *black 1
-							turnOrder.setText("Player 1 Turn");
-							prevMove.setText("Player 1 moved " + row + "," + col);
+					EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
+						public void handle(ActionEvent e) {
+							GameButton b = (GameButton)e.getSource();							
+							col = b.x;
+							row = b.y;
+							
+							b.gravity(matrix);
+							b.setDisable(true);
+							
+							if(move % 2 == 0) {
+								b.setStyle("-fx-background-color: #000000"); // *black 1
+								turnOrder.setText("Player 1 Turn");
+								prevMove.setText("Player 1 moved " + row + "," + col);
+							}
+							else {
+								b.setStyle("-fx-background-color: #ff0000"); // *red 2
+								turnOrder.setText("Player 2 Turn");
+								prevMove.setText("Player 2 moved " + row + "," + col);
+							}
+							move++;
 						}
-						else {
-							b.setStyle("-fx-background-color: #ff0000"); // *red 2
-							turnOrder.setText("Player 2 Turn");
-							prevMove.setText("Player 2 moved " + row + "," + col);
+					};
+
+					for(int i = 0; i < 7; i++) {
+						for(int j = 0; j < 6; j++) {
+							GameButton b = new GameButton(i,j);
+							b.setMinSize(75,75);
+							b.setOnAction(handler);
+							matrix[i][j]= b;
+							gp.add(b, i, j);
 						}
-						move++;
 					}
-				};
+					gp.setHgap(10);
+					gp.setVgap(10);
 
-				for(int i = 0; i < 7; i++) {
-					for(int j = 0; j < 6; j++) {
-						GameButton b = new GameButton();
-						b.setMinSize(75,75);
-						b.setOnAction(handler);
-						gp.add(b, i, j);
-					}
-				}
-				gp.setHgap(10);
-				gp.setVgap(10);
+					vb2 = new VBox();
+					hb4 = new HBox();
+					hb5 = new HBox();
+					hb6 = new HBox();
 
-				vb2 = new VBox();
-				hb4 = new HBox();
-				hb5 = new HBox();
-				hb6 = new HBox();
+					hb4.getChildren().add(turnOrder);
+					hb5.getChildren().add(prevMove);
+					hb6.getChildren().add(gp);
+					
+					hb4.setAlignment(Pos.CENTER);
+					hb5.setAlignment(Pos.CENTER);
+					hb6.setAlignment(Pos.CENTER);
+					vb2.setPadding(new Insets(60, 0, 0, 0));
+					vb2.setSpacing(30);
 
-				hb4.getChildren().add(turnOrder);
-				hb5.getChildren().add(prevMove);
-				hb6.getChildren().add(gp);
-				
-				hb4.setAlignment(Pos.CENTER);
-				hb5.setAlignment(Pos.CENTER);
-				hb6.setAlignment(Pos.CENTER);
-				vb2.setPadding(new Insets(60, 0, 0, 0));
-				vb2.setSpacing(30);
+					vb2.getChildren().addAll(hb4, hb5, hb6);
 
-				vb2.getChildren().addAll(hb4, hb5, hb6);
-
-				Scene sceneTwo = new Scene(vb2, 700, 700);
-				primaryStage.setScene(sceneTwo);
-				primaryStage.show();
-
-			
-			// }
-
+					Scene sceneTwo = new Scene(vb2, 700, 700);
+					primaryStage.setScene(sceneTwo);
+					primaryStage.show();
         });
 
+
+		
 
         Scene scene = new Scene(vb, 700, 700);
         primaryStage.setScene(scene);
 		primaryStage.show();
+
+		port.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(!newValue.matches("\\d*")) {
+                port.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+
 	};
+
+	
 		
 
 }

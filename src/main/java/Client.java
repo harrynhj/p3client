@@ -15,10 +15,10 @@ public class Client extends Thread{
 	private String ipString;
 	private int portInt;
 
-	Client(Consumer<Serializable> call, String ipS, int portI){
-		callback = call;
-		ipString = ipS;
-		portInt = portI;
+	Client(Consumer<Serializable> callback, String ipString, int portInt){
+		this.callback = callback;
+		this.ipString = ipString;
+		this.portInt = portInt;
 	}
 	
 	public void run() {
@@ -41,7 +41,7 @@ public class Client extends Thread{
 	
     }
 	
-	public void send(String data) {
+	public void send(CFourInfo data) {
 		try {
 			out.writeObject(data);
 		} catch (IOException e) {
