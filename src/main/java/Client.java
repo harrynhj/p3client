@@ -20,9 +20,9 @@ public class Client extends Thread{
 		this.ipString = ipString;
 		this.portInt = portInt;
 	}
-	
+
 	public void run() {
-		
+
 		try {
 			socketClient= new Socket(ipString, portInt);
 			out = new ObjectOutputStream(socketClient.getOutputStream());
@@ -30,17 +30,17 @@ public class Client extends Thread{
 			socketClient.setTcpNoDelay(true);
 		}
 		catch(Exception e) {}
-		
-		while(true) { 
+
+		while(true) {
 			try {
 				String message = in.readObject().toString();
 				callback.accept(message);
 			}
 			catch(Exception e) {}
 		}
-	
-    }
-	
+
+	}
+
 	public void send(CFourInfo data) {
 		try {
 			out.writeObject(data);

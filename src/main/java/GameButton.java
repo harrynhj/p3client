@@ -19,12 +19,12 @@ import javafx.stage.WindowEvent;
 public class GameButton extends Button {
 	public int x;
 	public int y;
-	
+
 	GameButton(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}
-	
+
 	public void gravity(GameButton[][] matrix) {
 		for(int i = 0; i < matrix.length; i++) {
 			for(int j = 0; j < matrix[i].length; j++) {
@@ -33,7 +33,7 @@ public class GameButton extends Button {
 		}
 
 	}
-	
+
 	// public int sendResult() {	}
 
 }
