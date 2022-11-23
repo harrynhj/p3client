@@ -107,24 +107,24 @@ public class ClientGUI extends Application {
 			prevMove.setStyle("-fx-font-size: 24px; -fx-background-radius: 20px");
 
 			move = 0;
-			GameButton[][] matrix = new GameButton[7][6];
+			GameButton[][] matrix = new GameButton[6][7];
 
 			EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
 				public void handle(ActionEvent e) {
 					GameButton b = (GameButton)e.getSource();
-					col = b.x;
-					row = b.y;
+					row = b.x;
+					col = b.y;
 
-					b.gravity(matrix);
-					b.setDisable(true);
+					b.gravity(matrix, row, col, move);
+					// b.setDisable(true);
 
 					if(move % 2 == 0) {
-						b.setStyle("-fx-background-color: #000000"); // *black 1
+						// b.setStyle("-fx-background-color: #000000"); // *black 1
 						turnOrder.setText("Player 1 Turn");
 						prevMove.setText("Player 1 moved " + row + "," + col);
 					}
 					else {
-						b.setStyle("-fx-background-color: #ff0000"); // *red 2
+						// b.setStyle("-fx-background-color: #ff0000"); // *red 2
 						turnOrder.setText("Player 2 Turn");
 						prevMove.setText("Player 2 moved " + row + "," + col);
 					}
@@ -132,13 +132,13 @@ public class ClientGUI extends Application {
 				}
 			};
 
-			for(int i = 0; i < 7; i++) {
-				for(int j = 0; j < 6; j++) {
+			for(int i = 0; i < 6; i++) {
+				for(int j = 0; j < 7; j++) {
 					GameButton b = new GameButton(i,j);
 					b.setMinSize(75,75);
 					b.setOnAction(handler);
 					matrix[i][j]= b;
-					gp.add(b, i, j);
+					gp.add(b, j, i);
 				}
 			}
 			gp.setHgap(10);
@@ -174,9 +174,8 @@ public class ClientGUI extends Application {
 		primaryStage.show();
 
 		port.textProperty().addListener((observable, oldValue, newValue) -> {
-			if(!newValue.matches("\\d*")) {
+			if(!newValue.matches("\\d*"))
 				port.setText(newValue.replaceAll("[^\\d]", ""));
-			}
 		});
 
 	};

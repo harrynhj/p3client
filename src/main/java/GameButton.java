@@ -17,23 +17,43 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 public class GameButton extends Button {
-	public int x;
-	public int y;
+    public int x;
+    public int y;
 
-	GameButton(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
+    GameButton(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 
-	public void gravity(GameButton[][] matrix) {
-		for(int i = 0; i < matrix.length; i++) {
-			for(int j = 0; j < matrix[i].length; j++) {
-				matrix[0][0].setStyle("-fx-background-color: #aabbcc");
-			}
-		}
+    public void gravity(GameButton[][] matrix, int x, int y, int move) {
+        if(x+1 == matrix.length) {
+            matrix[x][y].setDisable(true);
+            return;
+        }
 
-	}
+        // if(matrix[x+1][y].isDisabled() == true)
+        //     matrix[x+1][y].setDisable(true);
 
-	// public int sendResult() {	}
+        
+        int i;
+        for(i = x + 1; i < matrix.length;i++) {
+            if(matrix[i][y].isDisabled())
+                break;
+        }
+
+        if(move % 2 == 0) {
+            matrix[i-1][y].setStyle("-fx-background-color: #000000"); // *black 1
+            matrix[i-1][y].setDisable(true);
+        }
+        else {
+            matrix[i-1][y].setStyle("-fx-background-color: #ff0000"); // *red 2
+            matrix[i-1][y].setDisable(true);
+        }
+
+        matrix[x][y].setDisable(false);
+
+    }
+
+    // public int sendResult() {    }
 
 }
