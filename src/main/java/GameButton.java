@@ -28,13 +28,32 @@ public class GameButton extends Button {
     public void gravity(GameButton[][] matrix, int x, int y, int move) {
         if(x+1 == matrix.length) {
             matrix[x][y].setDisable(true);
+            if(move % 2 == 0) {
+                matrix[x][y].setStyle("-fx-background-color: #000000"); // *black 1
+                matrix[x][y].setDisable(true);
+            }
+            else {
+                matrix[x][y].setStyle("-fx-background-color: #ff0000"); // *red 2
+                matrix[x][y].setDisable(true);
+            }
             return;
         }
 
-        // if(matrix[x+1][y].isDisabled() == true)
-        //     matrix[x+1][y].setDisable(true);
+        if(matrix[x + 1][y].isDisabled()) {
+            matrix[x][y].setDisable(true);
+            if(move % 2 == 0) {
+                matrix[x][y].setStyle("-fx-background-color: #000000"); // *black 1
+                matrix[x][y].setDisable(true);
+            }
+            else {
+                matrix[x][y].setStyle("-fx-background-color: #ff0000"); // *red 2
+                matrix[x][y].setDisable(true);
+            }
+            return;
+        }
 
-        
+
+
         int i;
         for(i = x + 1; i < matrix.length;i++) {
             if(matrix[i][y].isDisabled())
@@ -54,6 +73,6 @@ public class GameButton extends Button {
 
     }
 
-    // public int sendResult() {    }
+    // public int sendResult() {	}
 
 }
