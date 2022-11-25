@@ -78,6 +78,80 @@ public class ClientGUI extends Application {
 		vb.setPadding(new Insets(100, 0, 0, 0));
 		vb.setSpacing(100);
 
+
+		gp = new GridPane();
+		turnOrder = new Label();
+		turnOrder.setStyle("-fx-font-size: 24px; -fx-background-radius: 20px");
+		prevMove = new Label();
+		prevMove.setStyle("-fx-font-size: 24px; -fx-background-radius: 20px");
+
+		move = 0;
+		GameButton[][] matrix = new GameButton[6][7];
+
+		EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent e) {
+				GameButton b = (GameButton)e.getSource();
+				row = b.x;
+				col = b.y;
+
+				Pair<Integer,Integer> xy = b.gravity(matrix, row, col, move);
+				if (b.evalWinning(xy,matrix,move % 2)) {
+					if (move %2 == 0) {
+						System.out.println("Player1 Won");
+					} else {
+						System.out.println("Player2 Won");
+					}
+				}
+
+
+				if(move % 2 == 0) {
+					// b.setStyle("-fx-background-color: #000000"); // *black 1
+					turnOrder.setText("Player 1 Turn");
+					prevMove.setText("Player 1 moved " + row + "," + col);
+				}
+				else {
+					// b.setStyle("-fx-background-color: #ff0000"); // *red 2
+					turnOrder.setText("Player 2 Turn");
+					prevMove.setText("Player 2 moved " + row + "," + col);
+				}
+				move++;
+			}
+		};
+
+		for(int i = 0; i < 6; i++) {
+			for(int j = 0; j < 7; j++) {
+				GameButton b = new GameButton(i,j);
+				b.setMinSize(75,75);
+				b.setOnAction(handler);
+				matrix[i][j]= b;
+				gp.add(b, j, i);
+			}
+		}
+		gp.setHgap(10);
+		gp.setVgap(10);
+
+		vb2 = new VBox();
+		hb4 = new HBox();
+		hb5 = new HBox();
+		hb6 = new HBox();
+
+		hb4.getChildren().add(turnOrder);
+		hb5.getChildren().add(prevMove);
+		hb6.getChildren().add(gp);
+
+		hb4.setAlignment(Pos.CENTER);
+		hb5.setAlignment(Pos.CENTER);
+		hb6.setAlignment(Pos.CENTER);
+		vb2.setPadding(new Insets(60, 0, 0, 0));
+		vb2.setSpacing(30);
+
+		vb2.getChildren().addAll(hb4, hb5, hb6);
+
+		Scene sceneTwo = new Scene(vb2, 700, 700);
+		Scene scene = new Scene(vb, 700, 700);
+		primaryStage.setScene(scene);
+		primaryStage.show();
+
 		quit.setOnAction((event) -> {
 			Platform.exit();
 			System.exit(0);
@@ -98,89 +172,20 @@ public class ClientGUI extends Application {
 			portInt = Integer.parseInt(port.getText());
 
 			clientConnection = new Client(data -> {
-				Platform.runLater(() -> { }); } , ipString, portInt);
+				Platform.runLater(() -> {
+					if (Objects.equals(data.toString(), "invalid Ip or port")) {
+						error.setText("invalid Ip or port");
+						error.setVisible(true);
+						ip.clear();
+						port.clear();
+					} else {
+						primaryStage.setScene(sceneTwo);
+					}
+
+				}); } , ipString, portInt);
 			clientConnection.start();
 
-			gp = new GridPane();
-			turnOrder = new Label();
-			turnOrder.setStyle("-fx-font-size: 24px; -fx-background-radius: 20px");
-			prevMove = new Label();
-			prevMove.setStyle("-fx-font-size: 24px; -fx-background-radius: 20px");
-
-			move = 0;
-			GameButton[][] matrix = new GameButton[6][7];
-
-			EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
-				public void handle(ActionEvent e) {
-					GameButton b = (GameButton)e.getSource();
-					row = b.x;
-					col = b.y;
-
-					Pair<Integer,Integer> xy = b.gravity(matrix, row, col, move);
-					if (b.evalWinning(xy,matrix,move % 2)) {
-						if (move %2 == 0) {
-							System.out.println("Player1 Won");
-						} else {
-							System.out.println("Player2 Won");
-						}
-					}
-
-
-					if(move % 2 == 0) {
-						// b.setStyle("-fx-background-color: #000000"); // *black 1
-						turnOrder.setText("Player 1 Turn");
-						prevMove.setText("Player 1 moved " + row + "," + col);
-					}
-					else {
-						// b.setStyle("-fx-background-color: #ff0000"); // *red 2
-						turnOrder.setText("Player 2 Turn");
-						prevMove.setText("Player 2 moved " + row + "," + col);
-					}
-					move++;
-				}
-			};
-
-			for(int i = 0; i < 6; i++) {
-				for(int j = 0; j < 7; j++) {
-					GameButton b = new GameButton(i,j);
-					b.setMinSize(75,75);
-					b.setOnAction(handler);
-					matrix[i][j]= b;
-					gp.add(b, j, i);
-				}
-			}
-			gp.setHgap(10);
-			gp.setVgap(10);
-
-			vb2 = new VBox();
-			hb4 = new HBox();
-			hb5 = new HBox();
-			hb6 = new HBox();
-
-			hb4.getChildren().add(turnOrder);
-			hb5.getChildren().add(prevMove);
-			hb6.getChildren().add(gp);
-
-			hb4.setAlignment(Pos.CENTER);
-			hb5.setAlignment(Pos.CENTER);
-			hb6.setAlignment(Pos.CENTER);
-			vb2.setPadding(new Insets(60, 0, 0, 0));
-			vb2.setSpacing(30);
-
-			vb2.getChildren().addAll(hb4, hb5, hb6);
-
-			Scene sceneTwo = new Scene(vb2, 700, 700);
-			primaryStage.setScene(sceneTwo);
-			primaryStage.show();
 		});
-
-
-
-
-		Scene scene = new Scene(vb, 700, 700);
-		primaryStage.setScene(scene);
-		primaryStage.show();
-
 		port.textProperty().addListener((observable, oldValue, newValue) -> {
 			if(!newValue.matches("\\d*"))
 				port.setText(newValue.replaceAll("[^\\d]", ""));
