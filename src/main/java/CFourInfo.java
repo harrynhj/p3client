@@ -13,8 +13,6 @@ public class CFourInfo implements Serializable {
     public String p2Messages;
     public String errorMessages;
 
-    static final long serialVersionUID = 55L;
-
     CFourInfo(){
         p1turn = true;
         p1won = false;
