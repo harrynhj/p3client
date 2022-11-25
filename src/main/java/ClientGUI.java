@@ -23,6 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Pair;
 
 public class ClientGUI extends Application {
 	Client clientConnection;
@@ -115,8 +116,15 @@ public class ClientGUI extends Application {
 					row = b.x;
 					col = b.y;
 
-					b.gravity(matrix, row, col, move);
-					// b.setDisable(true);
+					Pair<Integer,Integer> xy = b.gravity(matrix, row, col, move);
+					if (b.evalWinning(xy,matrix,move % 2)) {
+						if (move %2 == 0) {
+							System.out.println("Player1 Won");
+						} else {
+							System.out.println("Player2 Won");
+						}
+					}
+
 
 					if(move % 2 == 0) {
 						// b.setStyle("-fx-background-color: #000000"); // *black 1
