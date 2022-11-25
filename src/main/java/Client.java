@@ -28,10 +28,13 @@ public class Client extends Thread{
 			out = new ObjectOutputStream(socketClient.getOutputStream());
 			in = new ObjectInputStream(socketClient.getInputStream());
 			socketClient.setTcpNoDelay(true);
+
+		} catch(Exception e) {
+			callback.accept("invalid Ip or port");
 		}
-		catch(Exception e) {}
 
 		while(true) {
+			callback.accept("On");
 			try {
 				String message = in.readObject().toString();
 				callback.accept(message);
