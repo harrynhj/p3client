@@ -179,6 +179,7 @@ public class ClientGUI extends Application {
 						ip.clear();
 						port.clear();
 					} else {
+						// TODO: wrong
 						primaryStage.setScene(sceneTwo);
 					}
 
