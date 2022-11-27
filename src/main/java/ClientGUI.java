@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
-import java.util.logging.Handler;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -12,29 +9,24 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Pair;
 
 public class ClientGUI extends Application {
 	Client clientConnection;
 
-	VBox vb, vb2;
-	HBox hb1, hb2, hbError, hb3, hb4, hb5, hb6;
+	VBox vb1, vb2, vb3;
+	HBox hb1, hb2, hbError, hb3, hb4, hb5, hb6, hb7, hb8;
 	GridPane gp;
-	Button quit, connect;
+	Button quit, connect, playAgain;
 
 	TextField ip, port;
-	Label welcome, sep, error, turnOrder, prevMove;
+	Label welcome, sep, error, turnOrder, prevMove, winner;
 
 	String ipString;
 	int portInt, row, col, move;
@@ -56,7 +48,7 @@ public class ClientGUI extends Application {
 		ip.setPromptText("IP");
 		port.setPromptText("Port");
 
-		vb = new VBox();
+		vb1 = new VBox();
 		hb1 = new HBox();
 		hb2 = new HBox(10);
 		hb3 = new HBox(75);
@@ -74,9 +66,9 @@ public class ClientGUI extends Application {
 		hbError.getChildren().add(error);
 		hb3.getChildren().addAll(quit, connect);
 
-		vb.getChildren().addAll(hb1, hb2, hb3, hbError);
-		vb.setPadding(new Insets(100, 0, 0, 0));
-		vb.setSpacing(100);
+		vb1.getChildren().addAll(hb1, hb2, hb3, hbError);
+		vb1.setPadding(new Insets(100, 0, 0, 0));
+		vb1.setSpacing(100);
 
 
 		gp = new GridPane();
@@ -85,8 +77,31 @@ public class ClientGUI extends Application {
 		prevMove = new Label();
 		prevMove.setStyle("-fx-font-size: 24px; -fx-background-radius: 20px");
 
+		vb3 = new VBox();
+		vb3.setPadding(new Insets(100, 0, 0, 0));
+		winner = new Label();
+		playAgain = new Button();
+		winner.setStyle("-fx-font-size: 64px;");
+		playAgain.setStyle("-fx-font-size: 16px;");
+		quit.setStyle("-fx-font-size: 16px;");
+		playAgain.setMinWidth(100);
+		quit.setMinWidth(100);
+
+		hb7 = new HBox();
+		hb8 = new HBox();
+		hb7.setAlignment(Pos.CENTER);
+		hb8.setAlignment(Pos.CENTER);
+
+		hb7.getChildren().add(winner);
+		hb8.getChildren().addAll(playAgain, quit);
+		vb3.setSpacing(100);
+		vb3.getChildren().addAll(hb7, hb8);
+		Scene sceneThree = new Scene(vb3, 700, 700);
+
 		move = 0;
 		GameButton[][] matrix = new GameButton[6][7];
+
+
 
 		EventHandler<ActionEvent> handler = new EventHandler<ActionEvent>() {
 			public void handle(ActionEvent e) {
@@ -97,9 +112,11 @@ public class ClientGUI extends Application {
 				Pair<Integer,Integer> xy = b.gravity(matrix, row, col, move);
 				if (b.evalWinning(xy,matrix,move % 2)) {
 					if (move %2 == 0) {
-						System.out.println("Player1 Won");
+						winner.setText("Player 1 Won");
+						primaryStage.setScene(sceneThree);
 					} else {
-						System.out.println("Player2 Won");
+						winner.setText("Player 2 Won");
+						primaryStage.setScene(sceneThree);
 					}
 				}
 
@@ -107,7 +124,7 @@ public class ClientGUI extends Application {
 				if(move % 2 == 0) {
 					// b.setStyle("-fx-background-color: #000000"); // *black 1
 					turnOrder.setText("Player 1 Turn");
-					prevMove.setText("Player 1 moved " + row + "," + col);
+					prevMove.setText("Player 1 moved " + xy.getKey() + "," + xy.getValue());
 				}
 				else {
 					// b.setStyle("-fx-background-color: #ff0000"); // *red 2
@@ -148,7 +165,7 @@ public class ClientGUI extends Application {
 		vb2.getChildren().addAll(hb4, hb5, hb6);
 
 		Scene sceneTwo = new Scene(vb2, 700, 700);
-		Scene scene = new Scene(vb, 700, 700);
+		Scene scene = new Scene(vb1, 700, 700);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 
@@ -174,12 +191,11 @@ public class ClientGUI extends Application {
 			clientConnection = new Client(data -> {
 				Platform.runLater(() -> {
 					if (Objects.equals(data.toString(), "invalid Ip or port")) {
-						error.setText("invalid Ip or port");
+						error.setText("Could not connect to server");
 						error.setVisible(true);
 						ip.clear();
 						port.clear();
 					} else {
-						// TODO: wrong
 						primaryStage.setScene(sceneTwo);
 					}
 

@@ -36,8 +36,7 @@ public class GameButton extends Button {
                 matrix[x][y].setStyle("-fx-background-color: #000000"); // *black 1
                 matrix[x][y].setDisable(true);
                 matrix[x][y].player = 1;
-            }
-            else {
+            } else {
                 matrix[x][y].setStyle("-fx-background-color: #ff0000"); // *red 2
                 matrix[x][y].setDisable(true);
                 matrix[x][y].player = 2;
